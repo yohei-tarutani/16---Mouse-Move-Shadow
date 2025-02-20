@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mouse Shadow</title>
+    <link rel="icon" href="https://fav.farm/🔥" />
+  </head>
+  <body>
+    <div class="hero">
+      <h1 contenteditable>🔥WOAH!</h1>
+    </div>
+
+    <style>
+      html {
+        color: black;
+        font-family: sans-serif;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: black;
+      }
+
+      h1 {
+        text-shadow: 10px 10px 0 rgba(0, 0, 0, 1);
+        font-size: 100px;
+      }
+    </style>
+
+    <script>
+      const hero = document.querySelector(".hero");
+      const text = document.querySelector("h1");
+      const walk = 200; // defines the maximum pixel distance the shadow can move in any direction.
+
+      // This function is called whenever the user moves their mouse inside the .hero div. The event object contains details about the mouse movement.
+      function shadow(e) {
+        console.log(e.target); // <div class="hero"> OR <h1>
+
+        // Getting the .hero div size
+        const { offsetWidth: width, offsetHeight: height } = hero;
+        // Retrieves the .hero element's width and height using destructuring assignment. (hero.offsetWidth: Width of .hero, hero.offsetHeight: Height of .hero both in pixels.)
+        // Suppose .hero is 1000px wide and 600px tall, then: width = 1000, height = 600;
+
+        // Getting the Mouse Position
+        let { offsetX: x, offsetY: y } = e;
+        // offsetX and offsetY give the mouse position relative to the element where the event happened.
+        // Suppose the mouse is at (200, 150) inside the .hero div, then: x = 200, y = 150
+
+        // Adjusting Mouse Position If Hovering Over <h1> (Not over .hero <div>)
+        if (this !== e.target) {
+          // Suppose <h1> starts 50px from the left and 20px from the top inside .hero. (ex, e.target.offsetLeft = 180, e.target.offsetTop = 150)
+          // If the mouse is at (50, 60) inside <h1>, (ex, x = 50 + 180 = 230, y = 60 + 150 = 210)
+          x = x + e.target.offsetLeft;
+          y = y + e.target.offsetTop;
+          // Now x and y are corrected to be relative to .hero instead of <h1>.
+        }
+
+        // Calculating the Shadow Offset (converts x and y into shadow movement values)
+        // Converts x and y into values ranging from -100 to 100 (since walk = 200).
+        const xWalk = Math.round((x / width) * walk - walk / 2);
+        const yWalk = Math.round((y / width) * walk - walk / 2);
+        // Let's assume: (x = 300, y = 150, width = 1000, walk = 200)
+        // xWalk = Math.round((300 / 1000) * 200 - 100) => Math.round(-40)
+        // xWalk = -40, meaning the shadow moves 40px to the left.
+        // yWalk = Math.round((150 / 1000) * 200 - 100) => = Math.round(-70)
+        // yWalk = -70, meaning the shadow moves 70px up.
+
+        // If the mouse is at different points:
+        // Center of .hero (500, 300): xWalk = 0, yWalk = 0 → No shadow shift.
+        // Far right (1000, 300): xWalk = 100 → Shadow moves far right.
+        // Far left (0, 300): xWalk = -100 → Shadow moves far left.
+
+        // Changes the text-shadow of <h1> dynamically based on xWalk and yWalk.
+        // Effect: The shadow moves away from the cursor. This creates four colored shadows at different positions.
+        text.style.textShadow = `
+          ${xWalk}px ${yWalk}px 0 rgba(255, 0, 255, 0.7),
+          ${xWalk * -1}px ${yWalk}px 0 rgba(0, 255, 255, 0.7),
+          ${yWalk}px ${xWalk * -1}px 0 rgba(0, 255, 0, 0.7),
+          ${yWalk * -1}px ${xWalk}px 0 rgba(0, 0, 255, 0.7)
+        `;
+        // Creates 4 colored shadows in different directions:
+        // 1. Purple (Magenta) → (xWalk, yWalk)
+        // 2. Cyan → (-xWalk, yWalk)
+        // 3. Green → (yWalk, -xWalk)
+        // 4. Blue → (-yWalk, xWalk)
+
+        // Given: xWalk = -40, yWalk = -70
+        // text-shadow:
+        // -40px -70px 0 rgba(255, 0, 255, 0.7),   /* Purple */
+        //  40px -70px 0 rgba(0, 255, 255, 0.7),   /* Cyan */
+        // -70px  40px 0 rgba(0, 255, 0, 0.7),     /* Green */
+        //  70px -40px 0 rgba(0, 0, 255, 0.7);     /* Blue */
+      }
+
+      // Attaches the shadow function to the mousemove event on <div class="hero">.
+      hero.addEventListener("mousemove", shadow);
+    </script>
+  </body>
+</html>
